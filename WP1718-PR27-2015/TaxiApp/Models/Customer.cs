@@ -10,7 +10,7 @@ namespace TaxiApp.Models
     {
         public string Username { get; private set; }
 
-        public string Password { get; private set; }
+        public string Password { get; set; }
 
         public string FirstName { get; set; }
         public string LastName { get; set; }

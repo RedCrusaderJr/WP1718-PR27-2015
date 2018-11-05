@@ -6,7 +6,7 @@ namespace TaxiApp.Common
     public interface IUser
     {
         string Username { get; }
-        string Password { get; }
+        string Password { get; set; }
         string FirstName { get; set; }
         string LastName { get; set; }
         EGender Gender { get; set; }

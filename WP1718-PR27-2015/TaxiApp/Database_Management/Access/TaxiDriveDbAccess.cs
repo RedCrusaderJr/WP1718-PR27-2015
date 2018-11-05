@@ -11,7 +11,26 @@ namespace TaxiApp.Database_Management.Access
     {
         public bool Add(TaxiDrive entityToAdd)
         {
-            throw new NotImplementedException();
+            bool result = false;
+
+            using (TaxiDbContext db = new TaxiDbContext())
+            {
+                if (!db.TaxiDrives.Any(td => td.TaxiDriveID.Equals(entityToAdd.TaxiDriveID)))
+                {
+                    try
+                    {
+                        db.TaxiDrives.Add(entityToAdd);
+                        db.SaveChanges();
+                        result = true;
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                }
+            }
+
+            return result;
         }
 
         public bool Delete(TaxiDrive entityToDelete)

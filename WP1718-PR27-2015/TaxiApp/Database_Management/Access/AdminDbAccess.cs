@@ -8,7 +8,7 @@ using System.Data.Entity;
 
 namespace TaxiApp.Database_Management.Access
 {
-    public abstract class AdminDbAccess : IDbAccess<Admin, string>
+    public class AdminDbAccess : IDbAccess<Admin, string>
     {
         public bool Add(Admin entityToAdd)
         {
@@ -16,7 +16,7 @@ namespace TaxiApp.Database_Management.Access
 
             using (TaxiDbContext db = new TaxiDbContext())
             {
-                if (!db.Admins.Contains(entityToAdd))
+                if (!db.Admins.Any(a => a.Username.Equals(entityToAdd.Username)))
                 {
                     try
                     {
@@ -105,13 +105,16 @@ namespace TaxiApp.Database_Management.Access
 
             using (TaxiDbContext db = new TaxiDbContext())
             {
-                try
+                if (db.Admins.Any(a => a.Username.Equals(key)))
                 {
-                    result = db.Admins.FirstOrDefault(a => a.Username.Equals(key));
-                }
-                catch(Exception e)
-                {
-                    throw e;
+                    try
+                    {
+                        result = db.Admins.Include(a => a.TaxiDrives).FirstOrDefault(a => a.Username.Equals(key));
+                    }
+                    catch(Exception e)
+                    {
+                        throw e;
+                    }
                 }
             }
 
@@ -128,7 +131,7 @@ namespace TaxiApp.Database_Management.Access
                 {
                     if(db.Admins.Count() > 0)
                     {
-                        result = new List<Admin>(db.Admins.ToList());
+                        result = new List<Admin>(db.Admins.Include(a => a.TaxiDrives).ToList());
                     }
                 }
                 catch (Exception e)

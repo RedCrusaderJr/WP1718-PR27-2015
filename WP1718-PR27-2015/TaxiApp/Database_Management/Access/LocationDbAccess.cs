@@ -24,7 +24,7 @@ namespace TaxiApp.Database_Management.Access
             throw new NotImplementedException();
         }
 
-        public object GetSingleAccountByKey(string key)
+        public Location GetSingleAccountByKey(string key)
         {
             throw new NotImplementedException();
         }
