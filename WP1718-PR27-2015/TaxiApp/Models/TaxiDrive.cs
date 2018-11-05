@@ -22,7 +22,7 @@ namespace TaxiApp.Models
 
         public Comment TaxiDriveComment { get; set; }
 
-        public Location TaxiDriveLocation { get; set; }
+        public Location TaxiDriveStartingLocation { get; set; }
         public Location TaxiDriveDestination { get; set; }
     }
 }

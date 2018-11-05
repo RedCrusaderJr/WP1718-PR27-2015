@@ -11,27 +11,128 @@ namespace TaxiApp.Database_Management.Access
     {
         public bool Add(Location entityToAdd)
         {
-            throw new NotImplementedException();
-        }
+            bool result = false;
 
-        public bool Delete(Location entityToDelete)
-        {
-            throw new NotImplementedException();
-        }
+            using (TaxiDbContext db = new TaxiDbContext())
+            {
+                if (!db.Locations.Any(l => l.LocationID.Equals(entityToAdd.LocationID)))
+                {
+                    try
+                    {
+                        db.Locations.Add(entityToAdd);
+                        db.SaveChanges();
+                        result = true;
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                }
+            }
 
-        public IEnumerable<Location> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Location GetSingleAccountByKey(string key)
-        {
-            throw new NotImplementedException();
+            return result;
         }
 
         public bool Modify(Location entityToModify)
         {
-            throw new NotImplementedException();
+            bool result = false;
+
+            using (TaxiDbContext db = new TaxiDbContext())
+            {
+                if (db.Locations.Any(l => l.LocationID.Equals(entityToModify.LocationID)))
+                {
+                    try
+                    {
+                        Location foundLocation = db.Locations.SingleOrDefault(l => l.LocationID.Equals(entityToModify.LocationID));
+                        db.Locations.Attach(foundLocation);
+
+                        //foundLocation.XCoordinate = entityToModify.XCoordinate;
+                        //foundLocation.YCoordinate = entityToModify.YCoordinate;
+                        foundLocation.StreetName = entityToModify.StreetName;
+                        foundLocation.StreetNumber = entityToModify.StreetNumber;
+                        foundLocation.City = entityToModify.City;
+                        foundLocation.ZipCode = entityToModify.ZipCode;
+                        
+                        db.SaveChanges();
+                        result = true;
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public bool Delete(Location entityToDelete)
+        {
+            bool result = false;
+
+            using (TaxiDbContext db = new TaxiDbContext())
+            {
+                if (db.Locations.Any(l=> l.LocationID.Equals(entityToDelete.LocationID)))
+                {
+                    try
+                    {
+                        db.Locations.Remove(entityToDelete);
+
+                        db.SaveChanges();
+                        result = true;
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public Location GetSingleAccountByKey(string key)
+        {
+            Location result = null;
+
+            using (TaxiDbContext db = new TaxiDbContext())
+            {
+                if (db.Locations.Any(l => l.LocationID.Equals(key)))
+                {
+                    try
+                    {
+                        result = db.Locations.FirstOrDefault(l => l.LocationID.Equals(key));
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public IEnumerable<Location> GetAll()
+        {
+            List<Location> result = new List<Location>();
+
+            using (TaxiDbContext db = new TaxiDbContext())
+            {
+                try
+                {
+                    if (db.Locations.Count() > 0)
+                    {
+                        result = new List<Location>(db.Locations.ToList());
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+
+            return result;
         }
     }
 }

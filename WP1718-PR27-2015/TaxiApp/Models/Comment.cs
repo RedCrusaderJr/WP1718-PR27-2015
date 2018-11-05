@@ -4,7 +4,7 @@ namespace TaxiApp.Models
 {
     public class Comment
     {
-        public string CommentID { get; set; }
+        public string CommentID { get; private set; }
         public string Description { get; set; }
         public string TaxiDriveRate { get; set; }
         public IUser CommentOwner { get; set; }
