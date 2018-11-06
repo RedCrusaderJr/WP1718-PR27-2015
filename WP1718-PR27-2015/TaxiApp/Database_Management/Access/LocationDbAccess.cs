@@ -7,9 +7,9 @@ using TaxiApp.Models;
 
 namespace TaxiApp.Database_Management.Access
 {
-    public class LocationDbAccess : IDbAccess<Location, string>
+    public class LocationDbAccess : BaseDbAccess<Location, string>
     {
-        public bool Add(Location entityToAdd)
+        public override bool Add(Location entityToAdd)
         {
             bool result = false;
 
@@ -33,7 +33,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public bool Modify(Location entityToModify)
+        public override bool Modify(Location entityToModify)
         {
             bool result = false;
 
@@ -66,7 +66,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public bool Delete(Location entityToDelete)
+        public override bool Delete(Location entityToDelete)
         {
             bool result = false;
 
@@ -91,7 +91,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public Location GetSingleAccountByKey(string key)
+        public override Location GetSingleAccountByKey(string key)
         {
             Location result = null;
 
@@ -113,7 +113,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public IEnumerable<Location> GetAll()
+        public override IEnumerable<Location> GetAll()
         {
             List<Location> result = new List<Location>();
 

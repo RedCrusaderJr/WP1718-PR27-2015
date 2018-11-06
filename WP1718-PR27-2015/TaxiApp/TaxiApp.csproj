@@ -189,11 +189,14 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Common\Enums.cs" />
-    <Compile Include="Common\IDbAccess.cs" />
+    <Compile Include="Common\BaseDbAccess.cs" />
     <Compile Include="Common\IUser.cs" />
+    <Compile Include="Controllers\AdminsController.cs" />
+    <Compile Include="Controllers\CustomersController.cs" />
+    <Compile Include="Controllers\DriversController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Database_Management\Access\CommentDbAccess.cs" />
+    <Compile Include="Database_Management\Access\DbAccess.cs" />
     <Compile Include="Database_Management\Configuration.cs" />
     <Compile Include="Database_Management\Access\CustomerDbAccess.cs" />
     <Compile Include="Database_Management\TaxiDbContext.cs" />

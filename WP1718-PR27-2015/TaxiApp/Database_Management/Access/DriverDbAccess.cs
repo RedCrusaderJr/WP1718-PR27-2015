@@ -8,9 +8,9 @@ using System.Data.Entity;
 
 namespace TaxiApp.Database_Management.Access
 {
-    public class DriverDbAccess : IDbAccess<Driver, string>
+    public class DriverDbAccess : BaseDbAccess<Driver, string>
     {
-        public bool Add(Driver entityToAdd)
+        public override bool Add(Driver entityToAdd)
         {
             bool result = false;
 
@@ -34,7 +34,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public bool Modify(Driver entityToModify)
+        public override bool Modify(Driver entityToModify)
         {
             bool result = false;
 
@@ -79,7 +79,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public bool Delete(Driver entityToDelete)
+        public override bool Delete(Driver entityToDelete)
         {
             bool result = false;
 
@@ -105,7 +105,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public Driver GetSingleAccountByKey(string key)
+        public override Driver GetSingleAccountByKey(string key)
         {
             Driver result = null;
 
@@ -130,7 +130,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public IEnumerable<Driver> GetAll()
+        public override IEnumerable<Driver> GetAll()
         {
             List<Driver> result = new List<Driver>();
 

@@ -8,9 +8,9 @@ using System.Data.Entity;
 
 namespace TaxiApp.Database_Management.Access
 {
-    public class TaxiDriveDbAccess : IDbAccess<TaxiDrive, string>
+    public class TaxiDriveDbAccess : BaseDbAccess<TaxiDrive, string>
     {
-        public bool Add(TaxiDrive entityToAdd)
+        public override bool Add(TaxiDrive entityToAdd)
         {
             bool result = false;
 
@@ -34,7 +34,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public bool Modify(TaxiDrive entityToModify)
+        public override bool Modify(TaxiDrive entityToModify)
         {
             bool result = false;
 
@@ -76,7 +76,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public bool Delete(TaxiDrive entityToDelete)
+        public override bool Delete(TaxiDrive entityToDelete)
         {
             bool result = false;
 
@@ -101,7 +101,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public TaxiDrive GetSingleAccountByKey(string key)
+        public override TaxiDrive GetSingleAccountByKey(string key)
         {
             TaxiDrive result = null;
 
@@ -129,7 +129,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public IEnumerable<TaxiDrive> GetAll()
+        public override IEnumerable<TaxiDrive> GetAll()
         {
             List<TaxiDrive> result = new List<TaxiDrive>();
 

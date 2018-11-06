@@ -4,34 +4,137 @@ using System.Linq;
 using System.Web;
 using TaxiApp.Common;
 using TaxiApp.Models;
+using System.Data.Entity;
 
 namespace TaxiApp.Database_Management.Access
 {
-    public class VehicleDbAccess : IDbAccess<Vehicle, string>
+    public class VehicleDbAccess : BaseDbAccess<Vehicle, string>
     {
-        public bool Add(Vehicle entityToAdd)
+        public override bool Add(Vehicle entityToAdd)
         {
-            throw new NotImplementedException();
+            bool result = false;
+
+            using (TaxiDbContext db = new TaxiDbContext())
+            {
+                if (!db.Vehicles.Any(v => v.VehicleID.Equals(entityToAdd.VehicleID)))
+                {
+                    try
+                    {
+                        db.Vehicles.Add(entityToAdd);
+                        db.SaveChanges();
+                        result = true;
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                }
+            }
+
+            return result;
         }
 
-        public bool Delete(Vehicle entityToDelete)
+        public override bool Modify(Vehicle entityToModify)
         {
-            throw new NotImplementedException();
+            bool result = false;
+
+            using (TaxiDbContext db = new TaxiDbContext())
+            {
+                if (db.Vehicles.Any(v => v.VehicleID.Equals(entityToModify.VehicleID)))
+                {
+                    try
+                    {
+                        Vehicle foundVehicle = db.Vehicles.Include(v => v.VehicleDriver)
+                                                          .SingleOrDefault(v => v.VehicleID.Equals(entityToModify.VehicleID));
+                        db.Vehicles.Attach(foundVehicle);
+
+                        foundVehicle.LicencePlateNo = entityToModify.LicencePlateNo;
+                        foundVehicle.ProductionYear = entityToModify.ProductionYear;
+                        foundVehicle.VehicleType = entityToModify.VehicleType;
+
+                        foundVehicle.VehicleDriver = entityToModify.VehicleDriver; //NEW
+                        
+                        db.SaveChanges();
+                        result = true;
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                }
+            }
+
+            return result;
         }
 
-        public IEnumerable<Vehicle> GetAll()
+        public override bool Delete(Vehicle entityToDelete)
         {
-            throw new NotImplementedException();
+            bool result = false;
+
+            using (TaxiDbContext db = new TaxiDbContext())
+            {
+                if (db.Vehicles.Any(v => v.VehicleID.Equals(entityToDelete.VehicleID)))
+                {
+                    try
+                    {
+                        db.Vehicles.Remove(entityToDelete);
+
+                        db.SaveChanges();
+                        result = true;
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                }
+            }
+
+            return result;
         }
 
-        public Vehicle GetSingleAccountByKey(string key)
+        public override Vehicle GetSingleAccountByKey(string key)
         {
-            throw new NotImplementedException();
+            Vehicle result = null;
+
+            using (TaxiDbContext db = new TaxiDbContext())
+            {
+                if (db.Vehicles.Any(v => v.VehicleID.Equals(key)))
+                {
+                    try
+                    {
+                        result = db.Vehicles.Include(v => v.VehicleDriver)
+                                            .FirstOrDefault(v => v.VehicleID.Equals(key));
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                }
+            }
+
+            return result;
         }
 
-        public bool Modify(Vehicle entityToModify)
+        public override IEnumerable<Vehicle> GetAll()
         {
-            throw new NotImplementedException();
+            List<Vehicle> result = new List<Vehicle>();
+
+            using (TaxiDbContext db = new TaxiDbContext())
+            {
+                try
+                {
+                    if (db.Vehicles.Count() > 0)
+                    {
+                        result = new List<Vehicle>(db.Vehicles.Include(v => v.VehicleDriver).ToList());
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+
+            return result;
         }
     }
 }

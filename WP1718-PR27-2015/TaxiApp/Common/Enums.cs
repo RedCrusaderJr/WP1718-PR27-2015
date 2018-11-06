@@ -8,12 +8,15 @@ namespace TaxiApp.Common
 {
     public enum EGender
     {
-
+        MALE = 1,
+        FEMALE = 2,
     }
 
     public enum ERole
     {
-
+        CUSTOMER = 1,
+        DRIVER = 2,
+        ADMIN = 3,
     }
 
     public enum EVehicleType

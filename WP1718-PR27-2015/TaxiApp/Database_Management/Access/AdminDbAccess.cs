@@ -8,9 +8,9 @@ using System.Data.Entity;
 
 namespace TaxiApp.Database_Management.Access
 {
-    public class AdminDbAccess : IDbAccess<Admin, string>
+    public class AdminDbAccess : BaseDbAccess<Admin, string>
     {
-        public bool Add(Admin entityToAdd)
+        public override bool Add(Admin entityToAdd)
         {
             bool result = false;
 
@@ -34,7 +34,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public bool Modify(Admin entityToModify)
+        public override bool Modify(Admin entityToModify)
         {
             bool result = false;
 
@@ -74,7 +74,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public bool Delete(Admin entityToDelete)
+        public override bool Delete(Admin entityToDelete)
         {
             bool result = false;
 
@@ -99,7 +99,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public Admin GetSingleAccountByKey(string key)
+        public override Admin GetSingleAccountByKey(string key)
         {
             Admin result = null;
 
@@ -121,7 +121,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public IEnumerable<Admin> GetAll()
+        public override IEnumerable<Admin> GetAll()
         {
             List<Admin> result = new List<Admin>();
 

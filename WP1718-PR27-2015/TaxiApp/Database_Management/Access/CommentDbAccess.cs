@@ -8,9 +8,9 @@ using System.Data.Entity;
 
 namespace TaxiApp.Database_Management.Access
 {
-    public class CommentDbAccess : IDbAccess<Comment, string>
+    public class CommentDbAccess : BaseDbAccess<Comment, string>
     {
-        public bool Add(Comment entityToAdd)
+        public override bool Add(Comment entityToAdd)
         {
             bool result = false;
 
@@ -34,7 +34,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public bool Modify(Comment entityToModify)
+        public override bool Modify(Comment entityToModify)
         {
             bool result = false;
 
@@ -67,7 +67,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public bool Delete(Comment entityToDelete)
+        public override bool Delete(Comment entityToDelete)
         {
             bool result = false;
 
@@ -92,7 +92,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public Comment GetSingleAccountByKey(string key)
+        public override Comment GetSingleAccountByKey(string key)
         {
             Comment result = null;
 
@@ -116,7 +116,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public IEnumerable<Comment> GetAll()
+        public override IEnumerable<Comment> GetAll()
         {
             List<Comment> result = new List<Comment>();
 

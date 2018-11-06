@@ -9,9 +9,9 @@ using System.Data.Entity;
 
 namespace TaxiApp.Database_Management.Access
 {
-    public class CustomerDbAccess : IDbAccess<Customer, string>
+    public class CustomerDbAccess : BaseDbAccess<Customer, string>
     {
-        public bool Add(Customer entityToAdd)
+        public override bool Add(Customer entityToAdd)
         {
             bool result = false;
 
@@ -35,7 +35,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public bool Modify(Customer entityToModify)
+        public override bool Modify(Customer entityToModify)
         {
             bool result = false;
 
@@ -76,7 +76,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public bool Delete(Customer entityToDelete)
+        public override bool Delete(Customer entityToDelete)
         {
             bool result = false;
 
@@ -101,7 +101,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public Customer GetSingleAccountByKey(string key)
+        public override Customer GetSingleAccountByKey(string key)
         {
             Customer result = null;
 
@@ -123,7 +123,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public IEnumerable<Customer> GetAll()
+        public override IEnumerable<Customer> GetAll()
         {
             List<Customer> result = new List<Customer>();
 
