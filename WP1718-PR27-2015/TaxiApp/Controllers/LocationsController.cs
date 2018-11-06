@@ -6,7 +6,7 @@ using System.Web.Http;
 
 namespace TaxiApp.Controllers
 {
-    public class AdminsController : ApiController
+    public class LocationsController : ApiController
     {
         // GET api/drivers
         public IEnumerable<string> Get()

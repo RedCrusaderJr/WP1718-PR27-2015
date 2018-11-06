@@ -11,6 +11,28 @@ namespace TaxiApp.Database_Management.Access
 {
     public class CustomerDbAccess : BaseDbAccess<Customer, string>
     {
+        #region Instance
+        private static CustomerDbAccess _instance;
+        private static readonly object _syncLock = new object();
+        public static CustomerDbAccess Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_syncLock)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new CustomerDbAccess();
+                        }
+                    }
+                }
+                return _instance;
+            }
+        }
+        #endregion
+
         public override bool Add(Customer entityToAdd)
         {
             bool result = false;
@@ -101,7 +123,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public override Customer GetSingleAccountByKey(string key)
+        public override Customer GetSingleEntityByKey(string key)
         {
             Customer result = null;
 

@@ -12,7 +12,7 @@ namespace TaxiApp.Common
       
         public abstract bool Modify(T entityToModify);
         public abstract bool Delete(T entityToDelete);
-        public abstract T GetSingleAccountByKey(Key key);
+        public abstract T GetSingleEntityByKey(Key key);
         public abstract IEnumerable<T> GetAll();
     }
 }

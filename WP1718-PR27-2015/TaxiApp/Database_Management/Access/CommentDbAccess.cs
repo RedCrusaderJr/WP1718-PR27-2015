@@ -10,6 +10,28 @@ namespace TaxiApp.Database_Management.Access
 {
     public class CommentDbAccess : BaseDbAccess<Comment, string>
     {
+        #region Instance
+        private static CommentDbAccess _instance;
+        private static readonly object _syncLock = new object();
+        public static CommentDbAccess Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_syncLock)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new CommentDbAccess();
+                        }
+                    }
+                }
+                return _instance;
+            }
+        }
+        #endregion
+
         public override bool Add(Comment entityToAdd)
         {
             bool result = false;
@@ -92,7 +114,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public override Comment GetSingleAccountByKey(string key)
+        public override Comment GetSingleEntityByKey(string key)
         {
             Comment result = null;
 

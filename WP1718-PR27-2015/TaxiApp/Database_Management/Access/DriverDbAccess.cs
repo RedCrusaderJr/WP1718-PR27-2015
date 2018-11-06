@@ -10,6 +10,28 @@ namespace TaxiApp.Database_Management.Access
 {
     public class DriverDbAccess : BaseDbAccess<Driver, string>
     {
+        #region Instance
+        private static DriverDbAccess _instance;
+        private static readonly object _syncLock = new object();
+        public static DriverDbAccess Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_syncLock)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new DriverDbAccess();
+                        }
+                    }
+                }
+                return _instance;
+            }
+        }
+        #endregion
+
         public override bool Add(Driver entityToAdd)
         {
             bool result = false;
@@ -105,7 +127,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public override Driver GetSingleAccountByKey(string key)
+        public override Driver GetSingleEntityByKey(string key)
         {
             Driver result = null;
 

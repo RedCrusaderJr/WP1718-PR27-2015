@@ -10,6 +10,28 @@ namespace TaxiApp.Database_Management.Access
 {
     public class AdminDbAccess : BaseDbAccess<Admin, string>
     {
+        #region Instance
+        private static AdminDbAccess _instance;
+        private static readonly object _syncLock = new object();
+        public static AdminDbAccess Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_syncLock)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new AdminDbAccess();
+                        }
+                    }
+                }
+                return _instance;
+            }
+        } 
+        #endregion
+
         public override bool Add(Admin entityToAdd)
         {
             bool result = false;
@@ -99,7 +121,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public override Admin GetSingleAccountByKey(string key)
+        public override Admin GetSingleEntityByKey(string key)
         {
             Admin result = null;
 

@@ -6,7 +6,7 @@ using System.Web.Http;
 
 namespace TaxiApp.Controllers
 {
-    public class DriversController : ApiController
+    public class CommentsController : ApiController
     {
         // GET api/drivers
         public IEnumerable<string> Get()

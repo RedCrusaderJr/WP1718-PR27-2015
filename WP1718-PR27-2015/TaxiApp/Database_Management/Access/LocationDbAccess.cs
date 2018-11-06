@@ -9,6 +9,28 @@ namespace TaxiApp.Database_Management.Access
 {
     public class LocationDbAccess : BaseDbAccess<Location, string>
     {
+        #region Instance
+        private static LocationDbAccess _instance;
+        private static readonly object _syncLock = new object();
+        public static LocationDbAccess Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_syncLock)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new LocationDbAccess();
+                        }
+                    }
+                }
+                return _instance;
+            }
+        }
+        #endregion
+
         public override bool Add(Location entityToAdd)
         {
             bool result = false;
@@ -91,7 +113,7 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public override Location GetSingleAccountByKey(string key)
+        public override Location GetSingleEntityByKey(string key)
         {
             Location result = null;
 

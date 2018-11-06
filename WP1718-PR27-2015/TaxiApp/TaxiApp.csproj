@@ -191,12 +191,12 @@
     <Compile Include="Common\Enums.cs" />
     <Compile Include="Common\BaseDbAccess.cs" />
     <Compile Include="Common\IUser.cs" />
-    <Compile Include="Controllers\AdminsController.cs" />
-    <Compile Include="Controllers\CustomersController.cs" />
-    <Compile Include="Controllers\DriversController.cs" />
+    <Compile Include="Controllers\CommentsController.cs" />
+    <Compile Include="Controllers\LocationsController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Controllers\TaxiDrivesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Database_Management\Access\CommentDbAccess.cs" />
-    <Compile Include="Database_Management\Access\DbAccess.cs" />
     <Compile Include="Database_Management\Configuration.cs" />
     <Compile Include="Database_Management\Access\CustomerDbAccess.cs" />
     <Compile Include="Database_Management\TaxiDbContext.cs" />
