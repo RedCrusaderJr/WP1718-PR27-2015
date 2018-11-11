@@ -10,7 +10,9 @@ namespace TaxiApp.Models
         public string CommentID { get; private set; }
         public string Description { get; set; }
         public string TaxiDriveRate { get; set; }
-        public IUser CommentOwner { get; set; }
+        public Admin CommentOwnerAdmin { get; set; }
+        public Driver CommentOwnerDriver { get; set; }
+        public Customer CommentOwnerCustomer { get; set; }
         public TaxiDrive CommentedTaxiDrive { get; set; }
         #endregion
 
@@ -26,7 +28,9 @@ namespace TaxiApp.Models
             CommentID = c.CommentID;
             Description = c.Description;
             TaxiDriveRate = c.TaxiDriveRate;
-            CommentOwner = c.CommentOwner;
+            CommentOwnerAdmin = c.CommentOwnerAdmin;
+            CommentOwnerDriver = c.CommentOwnerDriver;
+            CommentOwnerCustomer = c.CommentOwnerCustomer;
             CommentedTaxiDrive = c.CommentedTaxiDrive;
         }
     }

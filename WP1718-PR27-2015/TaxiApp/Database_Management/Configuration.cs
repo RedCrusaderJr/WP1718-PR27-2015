@@ -30,7 +30,7 @@ namespace TaxiApp.Database_Management
                 JMBG = "000",
             };
 
-            AdminDbAccess db = DbAccess.Instance.AdminDbAccess;
+            AdminDbAccess db = AdminDbAccess.Instance;
 
             try
             {

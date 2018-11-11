@@ -48,7 +48,9 @@ namespace TaxiApp.Database_Management
                                             .WithOptionalPrincipal(c => c.CommentedTaxiDrive);
 
             modelBuilder.Entity<Comment>().HasKey(c => c.CommentID);
-            modelBuilder.Entity<Comment>().HasOptional(c => c.CommentOwner);
+            modelBuilder.Entity<Comment>().HasOptional(c => c.CommentOwnerAdmin);
+            modelBuilder.Entity<Comment>().HasOptional(c => c.CommentOwnerDriver);
+            modelBuilder.Entity<Comment>().HasOptional(c => c.CommentOwnerCustomer);
 
             modelBuilder.Entity<Location>().HasKey(l => l.LocationID);
 

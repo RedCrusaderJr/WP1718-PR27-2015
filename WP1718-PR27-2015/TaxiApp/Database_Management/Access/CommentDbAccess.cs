@@ -66,14 +66,18 @@ namespace TaxiApp.Database_Management.Access
                 {
                     try
                     {
-                        Comment foundComment = db.Comments.Include(c => c.CommentOwner)
+                        Comment foundComment = db.Comments.Include(c => c.CommentOwnerAdmin)
+                                                          .Include(c => c.CommentOwnerDriver)
+                                                          .Include(c => c.CommentOwnerCustomer)
                                                           .Include(c => c.CommentedTaxiDrive)
                                                           .SingleOrDefault(c => c.CommentID.Equals(entityToModify.CommentID));
                         db.Comments.Attach(foundComment);
 
                         foundComment.Description = entityToModify.Description;
                         foundComment.TaxiDriveRate = entityToModify.TaxiDriveRate;
-                        foundComment.CommentOwner = entityToModify.CommentOwner; //NEW
+                        foundComment.CommentOwnerAdmin = entityToModify.CommentOwnerAdmin; //NEW
+                        foundComment.CommentOwnerDriver = entityToModify.CommentOwnerDriver; //NEW
+                        foundComment.CommentOwnerCustomer = entityToModify.CommentOwnerCustomer; //NEW
                         foundComment.CommentedTaxiDrive = entityToModify.CommentedTaxiDrive; //NEW
 
                         db.SaveChanges();
@@ -89,16 +93,17 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public override bool Delete(Comment entityToDelete)
+        public override bool Delete(string entityToDeleteID)
         {
             bool result = false;
 
             using (TaxiDbContext db = new TaxiDbContext())
             {
-                if (db.Comments.Any(c => c.CommentID.Equals(entityToDelete.CommentID)))
+                if (db.Comments.Any(c => c.CommentID.Equals(entityToDeleteID)))
                 {
                     try
                     {
+                        Comment entityToDelete = db.Comments.FirstOrDefault(c => c.CommentID.Equals(entityToDeleteID));
                         db.Comments.Remove(entityToDelete);
 
                         db.SaveChanges();
@@ -124,7 +129,9 @@ namespace TaxiApp.Database_Management.Access
                 {
                     try
                     {
-                        result = db.Comments.Include(c => c.CommentOwner)
+                        result = db.Comments.Include(c => c.CommentOwnerAdmin)
+                                            .Include(c => c.CommentOwnerDriver)
+                                            .Include(c => c.CommentOwnerCustomer)
                                             .Include(c => c.CommentedTaxiDrive)
                                             .FirstOrDefault(a => a.CommentID.Equals(key));
                     }
@@ -148,13 +155,30 @@ namespace TaxiApp.Database_Management.Access
                 {
                     if (db.Comments.Count() > 0)
                     {
-                        result = new List<Comment>(db.Comments.Include(c => c.CommentOwner)
+                        result = new List<Comment>(db.Comments.Include(c => c.CommentOwnerAdmin)
+                                                              .Include(c => c.CommentOwnerDriver)
+                                                              .Include(c => c.CommentOwnerCustomer)
                                                               .Include(c => c.CommentedTaxiDrive));
                     }
                 }
                 catch (Exception e)
                 {
                     throw e;
+                }
+            }
+
+            return result;
+        }
+
+        public override bool Exists(string key)
+        {
+            bool result = false;
+
+            using (TaxiDbContext db = new TaxiDbContext())
+            {
+                if (db.Comments.Any(c => c.CommentID.Equals(key)))
+                {
+                    result = true;
                 }
             }
 

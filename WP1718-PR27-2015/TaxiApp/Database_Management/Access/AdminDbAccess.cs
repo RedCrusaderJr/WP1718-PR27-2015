@@ -96,16 +96,17 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public override bool Delete(Admin entityToDelete)
+        public override bool Delete(string entityToDeleteID)
         {
             bool result = false;
 
             using (TaxiDbContext db = new TaxiDbContext())
             {
-                if (db.Admins.Any(a => a.Username.Equals(entityToDelete.Username)))
+                if (db.Admins.Any(a => a.Username.Equals(entityToDeleteID)))
                 {
                     try
                     {
+                        Admin entityToDelete = db.Admins.FirstOrDefault(a => a.Username.Equals(entityToDeleteID));
                         db.Admins.Remove(entityToDelete);
 
                         db.SaveChanges();
@@ -159,6 +160,21 @@ namespace TaxiApp.Database_Management.Access
                 catch (Exception e)
                 {
                     throw e;
+                }
+            }
+
+            return result;
+        }
+
+        public override bool Exists(string key)
+        {
+            bool result = false;
+
+            using (TaxiDbContext db = new TaxiDbContext())
+            {
+                if (db.Admins.Any(a => a.Username.Equals(key)))
+                {
+                    result = true;
                 }
             }
 

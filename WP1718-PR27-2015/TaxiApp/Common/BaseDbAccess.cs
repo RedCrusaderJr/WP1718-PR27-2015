@@ -11,8 +11,9 @@ namespace TaxiApp.Common
         public abstract bool Add(T entityToAdd);
       
         public abstract bool Modify(T entityToModify);
-        public abstract bool Delete(T entityToDelete);
+        public abstract bool Delete(Key entityToDeleteID);
         public abstract T GetSingleEntityByKey(Key key);
         public abstract IEnumerable<T> GetAll();
+        public abstract bool Exists(Key key);
     }
 }

@@ -101,16 +101,17 @@ namespace TaxiApp.Database_Management.Access
             return result;
         }
 
-        public override bool Delete(Driver entityToDelete)
+        public override bool Delete(string entityToDeleteID)
         {
             bool result = false;
 
             using (TaxiDbContext db = new TaxiDbContext())
             {
-                if (db.Drivers.Any(d => d.Username.Equals(entityToDelete.Username)))
+                if (db.Drivers.Any(d => d.Username.Equals(entityToDeleteID)))
                 {
                     try
                     {
+                        Driver entityToDelete = db.Drivers.FirstOrDefault(d => d.Username.Equals(entityToDeleteID));
                         db.Drivers.Remove(entityToDelete);
                         //LOCATION?
 
@@ -171,6 +172,21 @@ namespace TaxiApp.Database_Management.Access
                 catch (Exception e)
                 {
                     throw e;
+                }
+            }
+
+            return result;
+        }
+
+        public override bool Exists(string key)
+        {
+            bool result = false;
+
+            using (TaxiDbContext db = new TaxiDbContext())
+            {
+                if (db.Drivers.Any(d => d.Username.Equals(key)))
+                {
+                    result = true;
                 }
             }
 
