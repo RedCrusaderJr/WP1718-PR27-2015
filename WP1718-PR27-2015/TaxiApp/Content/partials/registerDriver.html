@@ -1,0 +1,76 @@
+﻿<form id="reg-driver-form" method="post" action="#">
+    <table border="0">
+        <tr>
+            <td colspan="2" align="left">
+                <h2>Registracija korisnika</h2>
+            </td>
+        </tr>
+        <tr>
+            <td>Korisnicko ime</td>
+            <td>
+                <input type="text" name="Username" />
+            </td>
+        </tr>
+        <tr>
+            <td>Lozinka</td>
+            <td>
+                <input type="password" name="Password" />
+            </td>
+        </tr>
+        <!--<tr>
+        <td>Potvrda lozinke:</td>
+        <td>
+            <input type="password" name="confirmPassword" />
+        </td>
+    </tr>-->
+        <tr>
+            <td>Ime</td>
+            <td>
+                <input type="text" name="FirstName" />
+            </td>
+        </tr>
+        <tr>
+            <td>Prezime</td>
+            <td>
+                <input type="text" name="LastName" />
+            </td>
+        </tr>
+        <tr>
+            <td>JMBG</td>
+            <td>
+                <input type="number" name="JMBG" />
+            </td>
+        </tr>
+        <tr>
+            <td>Broj telefona</td>
+            <td>
+                <input type="number" name="Phone" />
+            </td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>
+                <input type="text" name="Email" />
+            </td>
+        </tr>
+        <tr>
+            <td>Pol</td>
+            <td>
+                <select name="Gender">
+                    <option value="1">Muski</option>
+                    <option value="2">Zenski</option>
+                    <option value="3">Drugi</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input id="login-sub" type="submit" value="Uloguj se" />
+            </td>
+        </tr>
+    </table>
+    <div id="driver-reg-div"></div>
+    <input id="reg-sub" type="submit" value="Registrujte vozaca"/>
+</form>
+
+<script>validateDriverRegistration()</script>

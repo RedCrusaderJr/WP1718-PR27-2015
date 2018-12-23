@@ -10,6 +10,7 @@ using TaxiApp.Common;
 using TaxiApp.Database_Management.Access;
 using TaxiApp.Models;
 using TaxiApp.Models.NonDbModels;
+using TaxiApp.Models.NonDbModels.UsersControllerModels;
 
 namespace TaxiApp.Controllers
 {
@@ -24,16 +25,21 @@ namespace TaxiApp.Controllers
             }
         }
 
+        public AdminDbAccess DbAdmin { get { return AdminDbAccess.Instance; } }
+        public DriverDbAccess DbDriver { get { return DriverDbAccess.Instance; } }
+        public CustomerDbAccess DbCustomer { get { return CustomerDbAccess.Instance; } }
+        public CommentDbAccess DbComment { get { return CommentDbAccess.Instance; } }
+        public TaxiDriveDbAccess DbTaxiDrive { get { return TaxiDriveDbAccess.Instance; } }
+        public VehicleDbAccess DbVehicle { get { return VehicleDbAccess.Instance; } }
+        public LocationDbAccess DbLocation { get { return LocationDbAccess.Instance; } }
+
         #region GET
         [HttpGet]
         [Route("api/users/get")]
         //[Route("get")]
         [ResponseType(typeof(IEnumerable<IUser>))]
-        public IHttpActionResult GetUsers(string senderID)
+        public IHttpActionResult GetUsers([FromUri]string senderID)
         {
-            AdminDbAccess dbAdmin = AdminDbAccess.Instance;
-            CustomerDbAccess dbCustomer = CustomerDbAccess.Instance;
-            DriverDbAccess dbDriver = DriverDbAccess.Instance;
             List<IUser> result = new List<IUser>();
 
             if(!LoggedUsers.Contains(senderID))
@@ -45,9 +51,9 @@ namespace TaxiApp.Controllers
 
             try
             {
-                (dbAdmin.GetAll()).ToList().ForEach(a => result.Add(a));
-                (dbCustomer.GetAll()).ToList().ForEach(c => result.Add(c));
-                (dbDriver.GetAll()).ToList().ForEach(d => result.Add(d));
+                (DbAdmin.GetAll()).ToList().ForEach(a => result.Add(a));
+                (DbCustomer.GetAll()).ToList().ForEach(c => result.Add(c));
+                (DbDriver.GetAll()).ToList().ForEach(d => result.Add(d));
             }
             catch (Exception e)
             {
@@ -63,10 +69,8 @@ namespace TaxiApp.Controllers
         [Route("api/users/getNonDriver")]
         //[Route("getNonDriver")]
         [ResponseType(typeof(IUser))]
-        public IHttpActionResult GetNonDriver(string senderID, [FromBody]string userIdToGet)
+        public IHttpActionResult GetNonDriver([FromUri]string senderID, [FromUri]string userIdToGet)
         {
-            AdminDbAccess dbAdmin = AdminDbAccess.Instance;
-            CustomerDbAccess dbCustomer = CustomerDbAccess.Instance;
             IUser result = null;
 
             if (!LoggedUsers.Contains(senderID))
@@ -74,41 +78,32 @@ namespace TaxiApp.Controllers
                 return Content(HttpStatusCode.Unauthorized, "Not logged in.");
             }
 
-            if(dbAdmin.Exists(userIdToGet))
+            try
             {
-                if (!dbAdmin.Exists(senderID))
+                if(DbAdmin.Exists(userIdToGet))
                 {
-                    return Content(HttpStatusCode.Unauthorized, "Not a dispatcher.");
-                }
+                    if (!DbAdmin.Exists(senderID))
+                    {
+                        return Content(HttpStatusCode.Unauthorized, "Not a dispatcher.");
+                    }
 
-                try
-                {
-                    result = dbAdmin.GetSingleEntityByKey(userIdToGet);
+                    result = DbAdmin.GetSingleEntityByKey(userIdToGet);
                 }
-                catch (Exception e)
+                else if (DbCustomer.Exists(userIdToGet))
                 {
-                    Trace.Write($"Error on 'GetUser()'. Error message: {e.Message}");
-                    Trace.Write($"[STACK_TRACE] {e.StackTrace}");
-                    return InternalServerError(e);
+                    if (!DbAdmin.Exists(senderID) || senderID != userIdToGet)
+                    {
+                        return Content(HttpStatusCode.Unauthorized, "Not a dispatcher nor the user whose information are requested.");
+                    }
+
+                    result = DbAdmin.GetSingleEntityByKey(userIdToGet);
                 }
             }
-            else if(dbCustomer.Exists(userIdToGet))
+            catch(Exception e)
             {
-                if (!dbAdmin.Exists(senderID) || senderID != userIdToGet)
-                {
-                    return Content(HttpStatusCode.Unauthorized, "Not a dispatcher nor the user whose information are requested.");
-                }
-
-                try
-                {
-                    result = dbAdmin.GetSingleEntityByKey(userIdToGet);
-                }
-                catch (Exception e)
-                {
-                    Trace.Write($"Error on 'GetUser()'. Error message: {e.Message}");
-                    Trace.Write($"[STACK_TRACE] {e.StackTrace}");
-                    return InternalServerError(e);
-                }
+                Trace.Write($"Error on 'GetNonDriver()'. Error message: {e.Message}");
+                Trace.Write($"[STACK_TRACE] {e.StackTrace}");
+                return InternalServerError(e);
             }
 
 
@@ -124,10 +119,8 @@ namespace TaxiApp.Controllers
         [Route("api/users/getDriver")]
         //[Route("getDriver")]
         [ResponseType(typeof(Driver))]
-        public IHttpActionResult GetDriver(string senderID, [FromBody]string userIdToGet)
+        public IHttpActionResult GetDriver([FromUri]string senderID, [FromUri]string userIdToGet)
         {
-            AdminDbAccess dbAdmin = AdminDbAccess.Instance;
-            DriverDbAccess dbDriver = DriverDbAccess.Instance;
             Driver result = null;
 
             if (!LoggedUsers.Contains(senderID))
@@ -135,23 +128,23 @@ namespace TaxiApp.Controllers
                 return Content(HttpStatusCode.Unauthorized, "Not logged in.");
             }
 
-            if (dbDriver.Exists(userIdToGet))
+            try
             {
-                if (!dbAdmin.Exists(senderID) || senderID != userIdToGet)
+                if (DbDriver.Exists(userIdToGet))
                 {
-                    return Content(HttpStatusCode.Unauthorized, "Not a dispatcher nor the user whose information are requested.");
-                }
+                    if (!DbAdmin.Exists(senderID) || senderID != userIdToGet)
+                    {
+                        return Content(HttpStatusCode.Unauthorized, "Not a dispatcher nor the user whose information are requested.");
+                    }
 
-                try
-                {
-                    result = dbDriver.GetSingleEntityByKey(userIdToGet);
+                    result = DbDriver.GetSingleEntityByKey(userIdToGet);
                 }
-                catch (Exception e)
-                {
-                    Trace.Write($"Error on 'GetUser()'. Error message: {e.Message}");
-                    Trace.Write($"[STACK_TRACE] {e.StackTrace}");
-                    return InternalServerError(e);
-                }
+            }
+            catch (Exception e)
+            {
+                Trace.Write($"Error on 'GetDriver()'. Error message: {e.Message}");
+                Trace.Write($"[STACK_TRACE] {e.StackTrace}");
+                return InternalServerError(e);
             }
 
             if (result == null)
@@ -168,56 +161,35 @@ namespace TaxiApp.Controllers
         [Route("api/users/login")]
         //[Route("login")]
         [ResponseType(typeof(IUser))]
-        public IHttpActionResult Login(LoginModel loginModel)
+        public IHttpActionResult Login([FromBody]LoginModel loginModel)
         {
             if (LoggedUsers.Contains(loginModel.Username))
             {
                 return Content(HttpStatusCode.Conflict, $"User '{loginModel.Username}' already logged in.");
             }
 
-            AdminDbAccess dbAdmin = AdminDbAccess.Instance;
-            DriverDbAccess dbDriver = DriverDbAccess.Instance;
-            CustomerDbAccess dbCustomer = CustomerDbAccess.Instance;
             IUser result = null;
 
-            if (dbAdmin.Exists(loginModel.Username))
+            try
             {
-                try
+                if (DbAdmin.Exists(loginModel.Username))
                 {
-                    result = dbAdmin.GetSingleEntityByKey(loginModel.Username);
+                    result = DbAdmin.GetSingleEntityByKey(loginModel.Username);
                 }
-                catch (Exception e)
+                else if (DbDriver.Exists(loginModel.Username))
                 {
-                    Trace.Write($"Error on 'GetUser()'. Error message: {e.Message}");
-                    Trace.Write($"[STACK_TRACE] {e.StackTrace}");
-                    return InternalServerError(e);
+                    result = DbDriver.GetSingleEntityByKey(loginModel.Username);
+                }
+                else if (DbCustomer.Exists(loginModel.Username))
+                {
+                    result = DbCustomer.GetSingleEntityByKey(loginModel.Username);
                 }
             }
-            else if (dbDriver.Exists(loginModel.Username))
+            catch (Exception e)
             {
-                try
-                {
-                    result = dbDriver.GetSingleEntityByKey(loginModel.Username);
-                }
-                catch (Exception e)
-                {
-                    Trace.Write($"Error on 'GetUser()'. Error message: {e.Message}");
-                    Trace.Write($"[STACK_TRACE] {e.StackTrace}");
-                    return InternalServerError(e);
-                }
-            }
-            else if (dbCustomer.Exists(loginModel.Username))
-            {
-                try
-                {
-                    result = dbCustomer.GetSingleEntityByKey(loginModel.Username);
-                }
-                catch (Exception e)
-                {
-                    Trace.Write($"Error on 'GetUser()'. Error message: {e.Message}");
-                    Trace.Write($"[STACK_TRACE] {e.StackTrace}");
-                    return InternalServerError(e);
-                }
+                Trace.Write($"Error on 'Login()'. Error message: {e.Message}");
+                Trace.Write($"[STACK_TRACE] {e.StackTrace}");
+                return InternalServerError(e);
             }
 
             if (result == null)
@@ -241,15 +213,15 @@ namespace TaxiApp.Controllers
         [Route("api/users/logout")]
         //[Route("logout")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult Logout([FromBody]string senderID)
+        public IHttpActionResult Logout([FromBody]LogoutModel logoutModel)
         {
-            if (!LoggedUsers.Contains(senderID))
+            if (!LoggedUsers.Contains(logoutModel.Username))
             {
-                return BadRequest($"User '{senderID}' was not logged in.");
+                return BadRequest($"User '{logoutModel.Username}' was not logged in.");
             }
             else
             {
-                LoggedUsers.Remove(senderID);
+                LoggedUsers.Remove(logoutModel.Username);
                 return Ok();
             }
         }
@@ -258,18 +230,28 @@ namespace TaxiApp.Controllers
         [Route("api/users/postCustomer")]
         //[Route("postCustomer")]
         [ResponseType(typeof(Customer))]
-        public IHttpActionResult PostCustomer(string senderID, [FromBody]Customer customer)
-        { 
+        public IHttpActionResult PostCustomer([FromUri]string senderID, [FromBody]GeneralUserModel userModel)
+        {
+            Customer customer = new Customer(userModel.Username, userModel.Password)
+            {
+                FirstName = userModel.FirstName,
+                LastName = userModel.LastName,
+                Gender = userModel.Gender,
+                JMBG = userModel.JMBG,
+                Phone = userModel.Phone,
+                Email = userModel.Email,
+                
+            };
+            userModel.TaxiDrivesIDs.ForEach(td => customer.TaxiDrives.Add(DbTaxiDrive.GetSingleEntityByKey(td)));
+
             //Customer ne pravi sam svoj nalog
             if (senderID != customer.Username)
             {
-                AdminDbAccess dbAdmin = AdminDbAccess.Instance;
-
                 if (!LoggedUsers.Contains(senderID))
                 {
                     return Content(HttpStatusCode.Unauthorized, "Not logged in.");
                 }
-                else if(!dbAdmin.Exists(senderID))
+                else if(!DbAdmin.Exists(senderID))
                 {
                     return Content(HttpStatusCode.Unauthorized, "Not a dispatcher nor the user to be added.");
                 }
@@ -280,12 +262,10 @@ namespace TaxiApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            CustomerDbAccess dbCustomer = CustomerDbAccess.Instance;
-
             bool result;
             try
             {
-                result = dbCustomer.Add(customer);
+                result = DbCustomer.Add(customer);
             }
             catch (Exception e)
             {
@@ -308,15 +288,27 @@ namespace TaxiApp.Controllers
         [Route("api/users/postDriver")]
         //[Route("postDriver")]
         [ResponseType(typeof(Driver))]
-        public IHttpActionResult PostDriver(string senderID, [FromBody]Driver driver)
+        public IHttpActionResult PostDriver([FromUri]string senderID, [FromBody]DriverModel driverModel)
         {
-            AdminDbAccess dbAdmin = AdminDbAccess.Instance;
+
+            Driver driver = new Driver(driverModel.Username, driverModel.Password)
+            {
+                FirstName = driverModel.FirstName,
+                LastName = driverModel.LastName,
+                Gender = driverModel.Gender,
+                JMBG = driverModel.JMBG,
+                Phone = driverModel.Phone,
+                Email = driverModel.Email,
+                DriversLocation = DbLocation.GetSingleEntityByKey(driverModel.DriversLocationID),
+                DriversVehicle = DbVehicle.GetSingleEntityByKey(driverModel.DriversVehicleID),
+            };
+            driverModel.TaxiDrivesIDs.ForEach(td => driver.TaxiDrives.Add(DbTaxiDrive.GetSingleEntityByKey(td)));
 
             if (!LoggedUsers.Contains(senderID))
             {
                 return Content(HttpStatusCode.Unauthorized, "Not logged in.");
             }
-            else if (!dbAdmin.Exists(senderID))
+            else if (!DbAdmin.Exists(senderID))
             {
                 return Content(HttpStatusCode.Unauthorized, "Not a dispatcher.");
             }
@@ -326,16 +318,14 @@ namespace TaxiApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            DriverDbAccess dbDriver = DriverDbAccess.Instance;
-
             bool result;
             try
             {
-                result = dbDriver.Add(driver);
+                result = DbDriver.Add(driver);
             }
             catch (Exception e)
             {
-                Trace.Write($"Error on 'PostCustomer()'. Error message: {e.Message}");
+                Trace.Write($"Error on 'PostDriver()'. Error message: {e.Message}");
                 Trace.Write($"[STACK_TRACE] {e.StackTrace}");
                 return InternalServerError(e);
             }
@@ -357,49 +347,69 @@ namespace TaxiApp.Controllers
         //[Route("putNonDriver")]
         [ResponseType(typeof(IUser))]
         // PUT api/drivers/5
-        public IHttpActionResult PutNonDriver(string senderID, [FromBody]IUser user)
+        public IHttpActionResult PutNonDriver([FromUri]string senderID, [FromBody]GeneralUserModel user)
         {
             if(!LoggedUsers.Contains(senderID))
             {
                 return Content(HttpStatusCode.Unauthorized, "Not logged in.");
             }
 
-            AdminDbAccess dbAdmin = AdminDbAccess.Instance;
-            CustomerDbAccess dbCustomer = CustomerDbAccess.Instance;
             bool result = false;
 
-            if (dbAdmin.Exists(user.Username))
+            if (DbAdmin.Exists(user.Username))
             {
-                if(!dbAdmin.Exists(senderID))
+                if(!DbAdmin.Exists(senderID))
                 {
                     return Content(HttpStatusCode.Unauthorized, "Not a dispatcher.");
                 }
 
                 try
                 {
-                    result = dbAdmin.Modify(user as Admin);
+                    Admin admin = new Admin(user.Username, user.Password)
+                    {
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Gender = user.Gender,
+                        JMBG = user.JMBG,
+                        Phone = user.Phone,
+                        Email = user.Email,
+                    };
+                    user.TaxiDrivesIDs.ForEach(td => admin.TaxiDrives.Add(DbTaxiDrive.GetSingleEntityByKey(td)));
+
+                    result = DbAdmin.Modify(admin as Admin);
                 }
                 catch (Exception e)
                 {
-                    Trace.Write($"Error on 'GetUser()'. Error message: {e.Message}");
+                    Trace.Write($"Error on 'PutNonDriver()'. Error message: {e.Message}");
                     Trace.Write($"[STACK_TRACE] {e.StackTrace}");
                     return InternalServerError(e);
                 }
             }
-            else if (dbCustomer.Exists(user.Username))
+            else if (DbCustomer.Exists(user.Username))
             { 
-                if (!dbAdmin.Exists(senderID) || senderID != user.Username)
+                if (!DbAdmin.Exists(senderID) || senderID != user.Username)
                 {
                     return Content(HttpStatusCode.Unauthorized, "Not a dispatcher nor the user to be modifed.");
                 }
 
                 try
                 {
-                    result = dbCustomer.Modify(user as Customer);
+                    Customer customer = new Customer(user.Username, user.Password)
+                    {
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Gender = user.Gender,
+                        JMBG = user.JMBG,
+                        Phone = user.Phone,
+                        Email = user.Email,
+                    };
+                    user.TaxiDrivesIDs.ForEach(td => customer.TaxiDrives.Add(DbTaxiDrive.GetSingleEntityByKey(td)));
+
+                    result = DbCustomer.Modify(customer as Customer);
                 }
                 catch (Exception e)
                 {
-                    Trace.Write($"Error on 'GetUser()'. Error message: {e.Message}");
+                    Trace.Write($"Error on 'PutNonDriver()'. Error message: {e.Message}");
                     Trace.Write($"[STACK_TRACE] {e.StackTrace}");
                     return InternalServerError(e);
                 }
@@ -420,10 +430,9 @@ namespace TaxiApp.Controllers
         //[Route("putDriver")]
         [ResponseType(typeof(Driver))]
         // PUT api/drivers/5
-        public IHttpActionResult PutDriver(string senderID, [FromBody]Driver driver)
+        public IHttpActionResult PutDriver([FromUri]string senderID, [FromBody]DriverModel driverModel)
         {
-            AdminDbAccess dbAdmin = AdminDbAccess.Instance;
-            DriverDbAccess dbDriver = DriverDbAccess.Instance;
+            
             bool result = false;
 
             if (!LoggedUsers.Contains(senderID))
@@ -431,20 +440,34 @@ namespace TaxiApp.Controllers
                 return Content(HttpStatusCode.Unauthorized, "Not logged in.");
             }
 
-            if (dbDriver.Exists(driver.Username))
+            if (DbDriver.Exists(driverModel.Username))
             {
-                if (!dbAdmin.Exists(senderID) || senderID != driver.Username)
+                if (!DbAdmin.Exists(senderID) || senderID != driverModel.Username)
                 {
                     return Content(HttpStatusCode.Unauthorized, "Not a dispatcher nor a user to be modified.");
                 }
 
+
                 try
                 {
-                    result = dbDriver.Modify(driver);
+                    Driver driver = new Driver(driverModel.Username, driverModel.Password)
+                    {
+                        FirstName = driverModel.FirstName,
+                        LastName = driverModel.LastName,
+                        Gender = driverModel.Gender,
+                        JMBG = driverModel.JMBG,
+                        Phone = driverModel.Phone,
+                        Email = driverModel.Email,
+                        DriversLocation = DbLocation.GetSingleEntityByKey(driverModel.DriversLocationID),
+                        DriversVehicle = DbVehicle.GetSingleEntityByKey(driverModel.DriversVehicleID),
+                    };
+                    driverModel.TaxiDrivesIDs.ForEach(td => driver.TaxiDrives.Add(DbTaxiDrive.GetSingleEntityByKey(td)));
+
+                    result = DbDriver.Modify(driver);
                 }
                 catch (Exception e)
                 {
-                    Trace.Write($"Error on 'GetUser()'. Error message: {e.Message}");
+                    Trace.Write($"Error on 'PutDriver()'. Error message: {e.Message}");
                     Trace.Write($"[STACK_TRACE] {e.StackTrace}");
                     return InternalServerError(e);
                 }
@@ -452,7 +475,7 @@ namespace TaxiApp.Controllers
 
             if (result)
             {
-                return Ok(driver);
+                return Ok(driverModel);
             }
             else
             {
@@ -467,61 +490,40 @@ namespace TaxiApp.Controllers
         //[Route("deleteUser")]
         [ResponseType(typeof(void))]
         // DELETE api/drivers/5
-        public IHttpActionResult DeleteUser(string senderID, [FromBody]string userToDelete)
+        public IHttpActionResult DeleteUser([FromUri]string senderID, [FromUri]string userToDelete)
         {
-            AdminDbAccess dbAdmin = AdminDbAccess.Instance;
-            DriverDbAccess dbDriver = DriverDbAccess.Instance;
-            CustomerDbAccess dbCustomer = CustomerDbAccess.Instance;
             bool result = false;
 
             if (!LoggedUsers.Contains(senderID))
             {
                 return Content(HttpStatusCode.Unauthorized, "Not logged in.");
             }
-            else if(!dbAdmin.Exists(senderID))
+            else if(!DbAdmin.Exists(senderID))
             {
                 return Content(HttpStatusCode.Unauthorized, "Not a dispatcher.");
             }
 
-            if (dbAdmin.Exists(userToDelete))
+            try
             {
-                try
+                if (DbAdmin.Exists(userToDelete))
                 {
                     //TODO: sta ako obrise samog sebe logout?
-                    result = dbAdmin.Delete(userToDelete);
+                    result = DbAdmin.Delete(userToDelete);
                 }
-                catch (Exception e)
+                else if (DbDriver.Exists(userToDelete))
                 {
-                    Trace.Write($"Error on 'GetUser()'. Error message: {e.Message}");
-                    Trace.Write($"[STACK_TRACE] {e.StackTrace}");
-                    return InternalServerError(e);
+                    result = DbDriver.Delete(userToDelete);
+                }
+                else if (DbCustomer.Exists(userToDelete))
+                {
+                    result = DbCustomer.Delete(userToDelete);
                 }
             }
-            else if (dbDriver.Exists(userToDelete))
+            catch (Exception e)
             {
-                try
-                {
-                    result = dbDriver.Delete(userToDelete);
-                }
-                catch (Exception e)
-                {
-                    Trace.Write($"Error on 'GetUser()'. Error message: {e.Message}");
-                    Trace.Write($"[STACK_TRACE] {e.StackTrace}");
-                    return InternalServerError(e);
-                }
-            }
-            else if (dbCustomer.Exists(userToDelete))
-            {
-                try
-                {
-                    result = dbCustomer.Delete(userToDelete);
-                }
-                catch (Exception e)
-                {
-                    Trace.Write($"Error on 'GetUser()'. Error message: {e.Message}");
-                    Trace.Write($"[STACK_TRACE] {e.StackTrace}");
-                    return InternalServerError(e);
-                }
+                Trace.Write($"Error on 'DeleteUser()'. Error message: {e.Message}");
+                Trace.Write($"[STACK_TRACE] {e.StackTrace}");
+                return InternalServerError(e);
             }
 
             if (result)

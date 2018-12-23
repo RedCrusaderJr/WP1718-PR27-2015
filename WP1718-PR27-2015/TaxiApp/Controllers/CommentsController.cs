@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
+using TaxiApp.Database_Management.Access;
 using TaxiApp.Models;
 
 namespace TaxiApp.Controllers
@@ -18,6 +19,14 @@ namespace TaxiApp.Controllers
                 return HttpContext.Current.Application["Logged"] as List<string>;
             }
         }
+
+        public AdminDbAccess DbAdmin { get { return AdminDbAccess.Instance; } }
+        public DriverDbAccess DbDriver { get { return DriverDbAccess.Instance; } }
+        public CustomerDbAccess DbCustomer { get { return CustomerDbAccess.Instance; } }
+        public CommentDbAccess DbComment { get { return CommentDbAccess.Instance; } }
+        public TaxiDriveDbAccess DbTaxiDrive { get { return TaxiDriveDbAccess.Instance; } }
+        public VehicleDbAccess DbVehicle { get { return VehicleDbAccess.Instance; } }
+        public LocationDbAccess DbLocation { get { return LocationDbAccess.Instance; } }
 
         #region GET
         [HttpGet]
