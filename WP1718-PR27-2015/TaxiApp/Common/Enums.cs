@@ -16,8 +16,8 @@ namespace TaxiApp.Common
     public enum ERole
     {
         CUSTOMER = 1,
-        DRIVER = 2,
-        ADMIN = 3,
+        ADMIN = 2,
+        DRIVER = 3,
     }
 
     public enum EVehicleType

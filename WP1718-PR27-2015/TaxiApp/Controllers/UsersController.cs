@@ -42,7 +42,7 @@ namespace TaxiApp.Controllers
         {
             List<IUser> result = new List<IUser>();
 
-            if(!LoggedUsers.Contains(senderID))
+            if (!LoggedUsers.Contains(senderID))
             {
                 return Content(HttpStatusCode.Unauthorized, "Not logged in.");
             }
@@ -80,7 +80,7 @@ namespace TaxiApp.Controllers
 
             try
             {
-                if(DbAdmin.Exists(userIdToGet))
+                if (DbAdmin.Exists(userIdToGet))
                 {
                     if (!DbAdmin.Exists(senderID))
                     {
@@ -99,7 +99,7 @@ namespace TaxiApp.Controllers
                     result = DbAdmin.GetSingleEntityByKey(userIdToGet);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Trace.Write($"Error on 'GetNonDriver()'. Error message: {e.Message}");
                 Trace.Write($"[STACK_TRACE] {e.StackTrace}");
@@ -153,6 +153,43 @@ namespace TaxiApp.Controllers
             }
 
             return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("api/users/getHomePage")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult GetPage([FromUri]string senderID)
+        {
+            if(!LoggedUsers.Contains(senderID))
+            {
+                return Content(HttpStatusCode.Unauthorized, "Not logged in.");
+            }
+
+            try
+            {
+                if (DbAdmin.Exists(senderID))
+                {
+                    return Ok("./Content/partials/adminProfile.html");
+                }
+                else if (DbDriver.Exists(senderID))
+                {
+                    return Ok("./Content/partials/driverProfile.html");
+                }
+                else if (DbCustomer.Exists(senderID))
+                {
+                    return Ok("./Content/partials/customerProfile.html");
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception e)
+            {
+                Trace.Write($"Error on 'Login()'. Error message: {e.Message}");
+                Trace.Write($"[STACK_TRACE] {e.StackTrace}");
+                return InternalServerError(e);
+            }
         }
         #endregion
 
