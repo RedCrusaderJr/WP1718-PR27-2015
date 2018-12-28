@@ -23,7 +23,7 @@
                                 location.reload();
                             }
                             else {
-                                alert(jqXHR.statusText);
+                                //alert(jqXHR.statusText);
                             }
                         });
 
@@ -100,14 +100,14 @@ function loadLogin() {
         $("div#comment-div").hide();
         $("div#err-div").hide();
 
-        $("div#reg-div").load("./Content/partials/login.html");
         $("div#reg-div").show();
+        $("div#reg-div").load("./Content/partials/login.html"); 
 
-        $("a#register-a").bind("click", registerAction());
         $("a#register-a").show();
+        $("a#register-a").bind("click", registerAction());
     } catch (e) {
-        $("div#err-div").append(e.Message);
         $("div#err-div").show();
+        $("div#err-div").append(e.Message);
     }
 }
 
@@ -117,11 +117,11 @@ function registerAction() {
     $("div#comment-div").hide();
     $("div#err-div").hide();
 
-    $("div#reg-div").load("./Content/partials/registerCustomer.html");
     $("div#reg-div").show();
+    $("div#reg-div").load("./Content/partials/registerCustomer.html");
 
-    $("a#login-a").bind("click", loadLogin());
     $("a#login-a").show();
+    $("a#login-a").bind("click", loadLogin());
 
     return false;
 }
@@ -131,7 +131,8 @@ function registerAction() {
 
 function loginHandler() {
     $.post("api/users/login", $("form#login-form").serialize(), "json")
-        .done(function (data) {
+        .done(function (data, status, xhr) {
+            $("a#login-a").hide();
             $("a#register-a").hide();
             $("div#reg-div").hide();
             localStorage.setItem("logged", data.Username);
@@ -139,7 +140,7 @@ function loginHandler() {
             loadHomepage();
         })
         .fail(function (jqXHR) {
-            $("div#err-div").text(jqXHR.responseJSON["Message"]).show();
+            $("div#err-div").text(jqXHR.responseJSON).show();
         });
 }
 
@@ -187,21 +188,103 @@ function driverProfileUpdateHandler() {
 //VALIDATIONS
 
 function validateLogin() {
-    loginHandler();
+    $("form#login-form").validate({
+        rules: {
+            Username: {
+                required: true,
+                minlength: 3
+            },
+            Password: {
+                required: true,
+                minlength: 3
+            }
+        },
+        message: {
+            username: {
+                required: "Morate uneti ovo polje",
+                minlength: "Korisnicko ime mora biti minimum 3 slova dugacak"
+            },
+            password: {
+                required: "Morate uneti ovo polje",
+                minlength: "Lozinka mora biti minimum 3 slova dugacak"
+            }
+        },
+        submitHandler: function (form) {
+            loginHandler();
+        }
+    });
 }
 
 function validateCustomerRegistration() {
-    customerRegistrationHandler();
+    $("form#reg-customer-form").validate({
+        rules: {
+            Username: {
+                required: true,
+                minlength: 3
+            },
+            Password: {
+                required: true,
+                minlength: 3
+            },
+            FirstName: {
+                required: false,
+                maxlength: 15
+            },
+            LastName: {
+                required: false,
+                maxlength: 15
+            },
+            JMBG: {
+                required: false,
+            },
+            Phone: {
+                required: false,
+            },
+            Email: {
+                required: false,
+                maxlength: 15
+            },
+            Gender: {
+                required: true,
+            },
+        },
+        message: {
+            username: {
+                required: "Morate uneti ovo polje",
+                minlength: "Korisnicko ime mora biti minimum 3 slova dugacak"
+            },
+            password: {
+                required: "Morate uneti ovo polje",
+                minlength: "Lozinka mora biti minimum 3 slova dugacak"
+            }
+        },
+        submitHandler: function (form) {
+            customerRegistrationHandler();
+        }
+    }); 
 }
 
 function validateDriverRegistration() {
-    driverRegistrationHandler();
+    $("form#reg-driver-form").validate({
+        submitHandler: function (form) {
+            driverRegistrationHandler();
+        }
+    }); 
 }
 
 function validateNonDriverProfileUpdate() {
-    nonDriverProfileUpdateHandler();
+    $("form#update-non-driver-form").validate({
+        submitHandler: function (form) {
+            nonDriverProfileUpdateHandler();
+        }
+    });
 }
 
 function validateDriverProfileUpdate() {
-    driverProfileUpdateHandler();
+    $("form#update-driver-form").validate({
+        submitHandler: function (form) {
+            driverProfileUpdateHandler();
+        }
+    });
+    
 }
